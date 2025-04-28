@@ -3,13 +3,13 @@ package com.example.demoSpringSec.controllers;
 import com.example.demoSpringSec.dto.AuthRequest;
 import com.example.demoSpringSec.dto.AuthResponse;
 import com.example.demoSpringSec.dto.RegisterRequest;
+import com.example.demoSpringSec.models.User;
 import com.example.demoSpringSec.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class AuthController {
@@ -23,4 +23,9 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request){
         return ResponseEntity.ok(userService.login(request));
     }
+    @GetMapping ("/users/get-all-users")
+    public List<User> getAllUsers(){
+        return userService.getAllUsers();
+    }
+
 }

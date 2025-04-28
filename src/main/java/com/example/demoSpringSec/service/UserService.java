@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserService {
     @Autowired
@@ -52,9 +54,40 @@ public class UserService {
     }
 
     public User getUser(String usernameOrEmail){
-        User user = new User();
-        user = userRepository.findByUsername(usernameOrEmail).orElse(userRepository.findByEmail(usernameOrEmail).orElseThrow());
-        return user;
+        return userRepository.findByUsernameOrEmail(usernameOrEmail,usernameOrEmail).orElseThrow(()->new RuntimeException("User not found"));
+    }
+    public List<User> getAllUsers(){
+        return userRepository.findAll();
+    }
+    public String deleteUser(Long id){
+      if(!userRepository.existsById(id)){
+          throw new RuntimeException("User not found");
+      }
+      userRepository.deleteById(id);
+      return "User deleted successfully";
     }
 
+    public User updateUser(Long id,RegisterRequest userDetails){
+        User user = userRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("User not found!"));
+
+        if(!user.getUsername().equals(userDetails.getUsername())){
+            userRepository.existsByUsername(userDetails.getUsername())
+                    .orElseThrow(()-> new RuntimeException("Username already taken"));
+        }
+        if (!user.getEmail().equals(userDetails.getEmail())){
+            userRepository.existsByEmail(userDetails.getEmail());
+        }
+        user.setEmail(userDetails.getEmail());
+        user.setFirstname(userDetails.getFirstname());
+        user.setLastname(userDetails.getLastname());
+        if (userDetails.getPassword() != null && !userDetails.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(userDetails.getPassword()));
+        }
+        user.setUsername(userDetails.getUsername());
+        user.setNationalId(userDetails.getNationalId());
+        user.setAddress(userDetails.getAddress());
+
+        return userRepository.save(user);
+    }
 }

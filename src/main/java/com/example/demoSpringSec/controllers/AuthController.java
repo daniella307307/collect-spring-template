@@ -27,5 +27,13 @@ public class AuthController {
     public List<User> getAllUsers(){
         return userService.getAllUsers();
     }
+    @PutMapping("/user/update")
+    public User updateUser(@RequestParam Long id, @RequestBody RegisterRequest request){
+        return userService.updateUser(id,request);
+    }
 
+    @DeleteMapping("/user/delete")
+    public void deleteUser(@RequestParam Long id){
+        userService.deleteUser(id);
+    }
 }
